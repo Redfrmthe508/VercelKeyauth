@@ -13,7 +13,7 @@ Commands:
 
 Setup:
   1. pip install -r requirements-bot.txt
-  2. Fill in the CONFIG section below (or use env vars)
+  2. Set environment variables (or edit the CONFIG section below)
   3. python bot.py
 """
 
@@ -34,8 +34,14 @@ COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "keys")
 DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN", "YOUR_DISCORD_BOT_TOKEN")
 ADMIN_ROLE = os.environ.get("ADMIN_ROLE", "Admin")  # role name allowed to manage keys
 
-client = MongoClient(MONGO_URL, server_api=ServerApi("1"), serverSelectionTimeoutMS=8000)
-client.server_info()  # fail fast with a clear error
+try:
+    client = MongoClient(MONGO_URL, server_api=ServerApi("1"), serverSelectionTimeoutMS=8000)
+    client.server_info()
+except Exception as exc:
+    raise SystemExit(
+        "MongoDB connection failed. Check MONGO_URL in env vars or in bot.py CONFIG."
+    ) from exc
+
 db = client[DB_NAME]
 keys = db[COLLECTION_NAME]
 keys.create_index([("key", ASCENDING)], unique=True)
@@ -117,7 +123,7 @@ class KeyModal(discord.ui.Modal):
     def __init__(self):
         super().__init__(title="Generate a new key")
         self.days = discord.ui.TextInput(label="Valid for (days, 0 = forever)", default="30", max_length=4)
-        self.note = discord.TextInput(label="Note (optional)", required=False, max_length=200)
+        self.note = discord.ui.TextInput(label="Note (optional)", required=False, max_length=200)
         self.add_item(self.days)
         self.add_item(self.note)
 
@@ -136,7 +142,7 @@ class KeyModal(discord.ui.Modal):
         await interaction.response.send_message(
             embed=discord.Embed(
                 title="✅ Key generated",
-                description=f"```{key}```Expires: {expires[:10] if expires else 'never'}",
+                description=f"```{key}```\nExpires: {expires[:10] if expires else 'never'}",
                 color=discord.Color.green(),
             ),
             ephemeral=True,

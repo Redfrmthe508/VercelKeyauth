@@ -51,18 +51,20 @@ keyauth-system/
 
 ### 2 · Deploy the API to Vercel
 
-1. Fork this repo → sign in at [vercel.com](https://vercel.com) with GitHub
-2. **Add New… → Project** → Import your fork (settings are auto-detected)
-3. **Before first deploy**, add Environment Variables (Settings → Environment Variables):
+1. Fork or connect this repo on [vercel.com](https://vercel.com) with GitHub
+2. **Add New… → Project** → import your repo (settings are auto-detected)
+3. **Before first deploy**, add Environment Variables in Vercel → Project Settings → Environment Variables:
 
    | Name | Value |
    |---|---|
-   | `MONGO_URL` | your connection string |
-   | `DB_NAME` | `keyauth_db` |
-   | `COLLECTION_NAME` | `keys` |
+   | `MONGO_URL` | your MongoDB Atlas connection string |
+   | `DB_NAME` | `keyauth_db` (or your choice) |
+   | `COLLECTION_NAME` | `keys` (or your choice) |
    | `ADMIN_TOKEN` | **a long random secret** — unlocks the dashboard |
 
 4. Deploy → copy your URL, e.g. `https://your-app.vercel.app`
+
+**Important:** never commit `.env` files or real credentials. Use `.env.example` as a template and store real secrets only in Vercel environment variables.
 
 ### 3 · Open the dashboard
 

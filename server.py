@@ -32,13 +32,12 @@ MONGO_URL = os.environ.get("MONGO_URL", "URL_TO_YOUR_MONGODB_DATABASE")
 DB_NAME = os.environ.get("DB_NAME", "keyauth_db")
 COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "keys")
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "change-me")  # change in production!
-BAN_ENFORCEMENT = os.environ.get("BAN_ENFORCEMENT", "1") == "1"
 
 try:
     client = MongoClient(MONGO_URL, server_api=ServerApi("1"), serverSelectionTimeoutMS=5000)
     client.server_info()
-except ServerSelectionTimeoutError:
-    raise RuntimeError("Failed to connect to MongoDB. Check your connection string!")
+except ServerSelectionTimeoutError as exc:
+    raise RuntimeError("Failed to connect to MongoDB. Check your connection string!") from exc
 
 db = client[DB_NAME]
 keys_collection = db[COLLECTION_NAME]
